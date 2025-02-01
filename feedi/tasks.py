@@ -11,6 +11,7 @@ from functools import wraps
 import click
 import flask
 import opml
+import xml.etree.ElementTree as ET
 import sqlalchemy as sa
 from huey import crontab
 from huey.contrib.mini import MiniHuey
@@ -226,20 +227,41 @@ def csv_dump(file, user):
 @click.argument("file")
 @click.argument("user", required=False, callback=load_user_arg)
 def opml_load(file, user):
-    document = opml.OpmlDocument.load(file)
+    try:
+        document = opml.OpmlDocument.load(file)
 
-    for outline in document.outlines:
-        if outline.outlines:
-            # it's a folder
-            folder = outline.text
-            for feed in outline.outlines:
+        for outline in document.outlines:
+            if outline.outlines:
+                # it's a folder
+                folder = outline.text
+                for feed in outline.outlines:
+                    add_if_not_exists(
+                        models.RssFeed(name=feed.title or feed.text, user_id=user.id, url=feed.xml_url, folder=folder)
+                    )
+
+            else:
+                # it's a top-level feed
+                add_if_not_exists(models.RssFeed(name=feed.title or feed.text, user_id=user.id, url=feed.xml_url))
+    except Exception as e:
+        # happens with opml 1.0 files exported by liferea ("This package only supports OPML 2.0 specification")
+        print(e)
+        print('Parsing with opml library failed. Trying to parse OPML directly as XML.')
+        tree = ET.parse(file)
+        root = tree.getroot()
+        for outline in root.find('body'):
+            if outline.attrib['type'] == 'folder':
+                folder = outline.attrib['text']
+                for feed in outline:
+                    a = feed.attrib
+                    add_if_not_exists(
+                        models.RssFeed(name=a.get('title') or a['text'], user_id=user.id, url=a['xmlUrl'], folder=folder)
+                    )
+
+            else:
+                a = feed.attrib
                 add_if_not_exists(
-                    models.RssFeed(name=feed.title or feed.text, user_id=user.id, url=feed.xml_url, folder=folder)
+                    models.RssFeed(name=a.get('title') or a['text'], user_id=user.id, url=a['xmlUrl'])
                 )
-
-        else:
-            # it's a top-level feed
-            add_if_not_exists(models.RssFeed(name=feed.title or feed.text, user_id=user.id, url=feed.xml_url))
 
 
 @feed_cli.command("dump-opml")
