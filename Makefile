@@ -38,7 +38,7 @@ lint:
 
 # Serve the app in development mode
 run:
-	$(flask) run --debug --reload -h 0.0.0.0 -p 9988
+	$(flask) run --debug --reload -h 127.0.0.1 -p 9988
 
 # Build a docker for the app container and run it
 docker:
