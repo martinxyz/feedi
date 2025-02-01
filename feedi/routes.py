@@ -15,8 +15,8 @@ from feedi.parsers import mastodon, rss
 
 @app.route("/users/<username>")
 @app.route("/favorites", defaults={"favorited": True}, endpoint="favorites")
-@app.route("/folder/<folder>")
-@app.route("/feeds/<feed_name>/entries")
+@app.route("/folder/<path:folder>")
+@app.route("/feeds/<path:feed_name>/entries")
 @app.get("/entries/kindle", defaults={"sent_to_kindle": True}, endpoint="sent_to_kindle")
 @app.route("/")
 @login_required
@@ -501,7 +501,7 @@ def send_to_kindle():
     return "", 204
 
 
-@app.route("/feeds/<feed_name>/debug")
+@app.route("/feeds/<path:feed_name>/debug")
 @login_required
 def raw_feed(feed_name):
     """
