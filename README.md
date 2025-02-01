@@ -229,7 +229,7 @@ To enable user authentication:
 
 1. Remove the `DEFAULT_AUTH_USER` setting from the [configuration](https://github.com/facundoolano/feedi/blob/HEAD/feedi/config/default.py).
 2. If you already have a DB created, reset it with `make db-reset`. Or, alternatively, remove the default user
-with `make user-del EMAIL=admin@admin.com`. Note that this will also remove feeds and entries associated to it in the DB.
+with `make user-del EMAIL=admin@admin.invalid`. Note that this will also remove feeds and entries associated to it in the DB.
 3. You can create new users by running `make user-add EMAIL=some@email.address`. The command will prompt for a password.
 
 Note that there's no open user registration functionality exposed to the front end, but it should be straightforward to add it if you need it. Check the [auth module](https://github.com/facundoolano/feedi/blob/HEAD/feedi/auth.py) and the [flask-login documentation](https://flask-login.readthedocs.io/en/latest/) for details.
@@ -246,7 +246,7 @@ Create a volume for persisting the db data:
 
 Load the default feeds into the default admin user:
 
-    docker run -v feedidb:/app/instance ghcr.io/facundoolano/feedi flask --app feedi/app.py feed load feeds.csv admin@admin.com
+    docker run -v feedidb:/app/instance ghcr.io/facundoolano/feedi flask --app feedi/app.py feed load feeds.csv admin@admin.invalid
 	docker run -v feedidb:/app/instance ghcr.io/facundoolano/feedi flask --app feedi/app.py feed sync
 
 Run in development mode:

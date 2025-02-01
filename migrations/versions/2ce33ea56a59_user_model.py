@@ -30,7 +30,7 @@ def upgrade() -> None:
     op.bulk_insert(
         table,
         [{"id": 1,
-          "email": "admin@admin.com",
+          "email": "admin@admin.invalid",
           "password": generate_password_hash("admin")}])
 
 

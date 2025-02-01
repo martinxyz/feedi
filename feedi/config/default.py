@@ -19,4 +19,4 @@ HUEY_POOL_SIZE = 100
 # username to use internally when authentication is "disabled"
 # this user will be inserted automatically when first creating the DB
 # and auto-logged-in when a browser first sends a request to the app.
-DEFAULT_AUTH_USER = "admin@admin.com"
+DEFAULT_AUTH_USER = "admin@admin.invalid"
